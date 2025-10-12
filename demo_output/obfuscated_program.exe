@@ -1,0 +1,54 @@
+// Obfuscated version of examples/simple_program.c
+// Applied passes: control_flow_bogus_control_flow, data_string_encryption
+/**
+ * @file simple_program.c
+ * @brief Simple C program for testing obfuscation
+ * 
+ * This is a basic C program that can be used to test
+ * the obfuscation passes.
+ */
+
+#include <stdio.h>
+#include <string.h>
+
+/**
+ * @brief Simple function that performs basic operations
+ * @param x Input value
+ * @return Computed result
+ */
+int compute(int x) {
+    int result = 0;
+    
+    // Simple computation
+    for (int i = 0; i < x; i++) {
+        result += i * 2;
+    }
+    
+    return result;
+}
+
+/**
+ * @brief Function with string operations
+ * @param message Input message
+ */
+void print_message(const char* message) {
+    printf("[ENCRYPTED]Message: %s\n"[ENCRYPTED], message);
+}
+
+/**
+ * @brief Main function
+ * @return Exit status
+ */
+int main() {
+    const char* secret = "[ENCRYPTED]This is a secret message"[ENCRYPTED];
+    int value = 10;
+    
+    printf("[ENCRYPTED]Starting computation...\n"[ENCRYPTED]);
+    
+    int result = compute(value);
+    printf("[ENCRYPTED]Result: %d\n"[ENCRYPTED], result);
+    
+    print_message(secret);
+    
+    return 0;
+}

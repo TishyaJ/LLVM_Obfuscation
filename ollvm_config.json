@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "description": "LLVM Obfuscator Configuration",
+  "passes": {
+    "control_flow": {
+      "bogus_control_flow": {
+        "enabled": true,
+        "probability": 0.5,
+        "max_bogus_blocks": 3
+      },
+      "flattening": {
+        "enabled": false,
+        "max_flattening_depth": 2
+      }
+    },
+    "data": {
+      "string_encryption": {
+        "enabled": true,
+        "encryption_method": "xor",
+        "key_size": 32
+      },
+      "variable_substitution": {
+        "enabled": false,
+        "substitution_ratio": 0.3
+      }
+    },
+    "instruction": {
+      "instruction_substitution": {
+        "enabled": true,
+        "substitution_rate": 0.4
+      },
+      "opaque_predicates": {
+        "enabled": false,
+        "predicate_complexity": "medium"
+      }
+    }
+  },
+  "target": {
+    "architecture": "x86_64",
+    "optimization_level": "O2"
+  },
+  "output": {
+    "preserve_debug_info": true,
+    "generate_report": true
+  }
+}

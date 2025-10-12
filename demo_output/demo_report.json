@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-10-12T19:58:17.349933",
+  "input_file": "examples/simple_program.c",
+  "output_file": "demo_output/demo_obfuscated.exe",
+  "config": {
+    "passes": {
+      "control_flow": {
+        "bogus_control_flow": {
+          "enabled": true,
+          "probability": 0.5
+        }
+      },
+      "data": {
+        "string_encryption": {
+          "enabled": true,
+          "encryption_method": "xor"
+        }
+      },
+      "instruction": {
+        "instruction_substitution": {
+          "enabled": true,
+          "substitution_rate": 0.4
+        }
+      }
+    },
+    "smart_mode": {
+      "enabled": true,
+      "intensity": "moderate",
+      "complexity_analysis": {
+        "lines": 42,
+        "functions": 3,
+        "branches": 3,
+        "strings": 4,
+        "complexity_score": 59.8
+      },
+      "decision_summary": "Selected moderate obfuscation based on complexity score 59.8"
+    }
+  },
+  "metrics": {
+    "ir_size_growth": 86,
+    "function_count": 4,
+    "bogus_ratio": 39,
+    "complexity_score": 97
+  },
+  "resistance_score": 100,
+  "demo_mode": true
+}
