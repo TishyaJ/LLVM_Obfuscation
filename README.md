@@ -66,7 +66,7 @@ llvm-obfuscator/
 launch_dashboard.bat
 
 # Cross-platform
-python launch_dashboard.py
+py -m streamlit run production_dashboard.py
 ```
 **URL**: http://localhost:8501
 
