@@ -79,20 +79,15 @@ python main_launcher.py dashboard
 
 **Unified Launcher:**
 ```bash
-# System setup
-python main_launcher.py setup
+# Windows
+launch_dashboard.bat
 
-# Web dashboard
-python main_launcher.py dashboard
-
-# Command line interface
-python main_launcher.py cli -i examples/simple_program.c -o output.exe --smart
-
-# Quick demonstration
-python main_launcher.py demo
+# Cross-platform
+python launch_dashboard.py
 ```
+**URL**: http://localhost:8501
 
-**Direct Command Line:**
+### **Option 2: Complete CLI Demo**
 ```bash
 # Demo mode (instant, perfect for presentations)
 python advanced_obf_wrapper.py -i examples/simple_program.c -o output.exe --demo --smart
