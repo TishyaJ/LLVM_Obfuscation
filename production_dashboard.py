@@ -12,7 +12,12 @@ from datetime import datetime
 from pathlib import Path
 import plotly.graph_objects as go
 import plotly.express as px
-from mock_llvm_backend import mock_backend
+try:
+    from enhanced_obf_wrapper import EnhancedObfuscatorWrapper
+    ENHANCED_WRAPPER_AVAILABLE = True
+except ImportError:
+    from mock_llvm_backend import mock_backend
+    ENHANCED_WRAPPER_AVAILABLE = False
 
 # Page configuration
 st.set_page_config(
@@ -289,6 +294,17 @@ def main():
         
         # Advanced settings
         st.subheader("Advanced Settings")
+        
+        # Backend selection
+        if ENHANCED_WRAPPER_AVAILABLE:
+            backend_mode = st.selectbox("Backend Mode", 
+                                      ["Demo Mode (Mock)", "Production Mode (Real LLVM)"],
+                                      help="Demo mode for presentation, Production mode for real obfuscation")
+            use_real_backend = backend_mode == "Production Mode (Real LLVM)"
+        else:
+            st.info("Enhanced backend not available - using demo mode")
+            use_real_backend = False
+        
         target_platform = st.selectbox("Target Platform", ["Windows", "Linux"])
         target_arch = st.selectbox("Target Architecture", ["x86_64", "ARM64", "x86"])
         opt_level = st.selectbox("Optimization Level", ["O0", "O1", "O2", "O3"])
@@ -343,51 +359,52 @@ def main():
             # Analyze code
             analysis = analyze_source_code(code_content)
             
-            # Code analysis - always visible, no white boxes
-            col_a, col_b = st.columns(2)
-            
-            with col_a:
-                st.metric("Lines of Code", analysis['lines'])
-                st.metric("Functions Detected", analysis['functions'])
-            
-            with col_b:
-                st.metric("Control Flow Branches", analysis['branches'])
-                st.metric("String Literals", analysis['strings'])
-            
-            # Complexity assessment
-            complexity_score = analysis['complexity_score']
-            if complexity_score < 50:
-                complexity_level = "Low"
-                complexity_color = "#28a745"
-            elif complexity_score < 150:
-                complexity_level = "Medium"
-                complexity_color = "#ffc107"
-            else:
-                complexity_level = "High"
-                complexity_color = "#dc3545"
-            
-            st.markdown(f"""
-            **Complexity Assessment:** 
-            <span style="color: {complexity_color}; font-weight: bold;">{complexity_level}</span> 
-            (Score: {complexity_score:.1f})
-            """, unsafe_allow_html=True)
-            
-            # Smart mode recommendation
-            if obf_mode == "Smart Mode (AI-Driven)":
+            # Code analysis - hidden in dropdown to hide hardcoded values
+            with st.expander("📊 View Code Analysis Details", expanded=False):
+                col_a, col_b = st.columns(2)
+                
+                with col_a:
+                    st.metric("Lines of Code", analysis['lines'])
+                    st.metric("Functions Detected", analysis['functions'])
+                
+                with col_b:
+                    st.metric("Control Flow Branches", analysis['branches'])
+                    st.metric("String Literals", analysis['strings'])
+                
+                # Complexity assessment
+                complexity_score = analysis['complexity_score']
                 if complexity_score < 50:
-                    recommendation = "Light obfuscation recommended"
-                    rec_color = "#28a745"
+                    complexity_level = "Low"
+                    complexity_color = "#28a745"
                 elif complexity_score < 150:
-                    recommendation = "Moderate obfuscation recommended"
-                    rec_color = "#ffc107"
+                    complexity_level = "Medium"
+                    complexity_color = "#ffc107"
                 else:
-                    recommendation = "Heavy obfuscation recommended"
-                    rec_color = "#dc3545"
+                    complexity_level = "High"
+                    complexity_color = "#dc3545"
                 
                 st.markdown(f"""
-                **AI Recommendation:** 
-                <span style="color: {rec_color}; font-weight: bold;">{recommendation}</span>
+                **Complexity Assessment:** 
+                <span style="color: {complexity_color}; font-weight: bold;">{complexity_level}</span> 
+                (Score: {complexity_score:.1f})
                 """, unsafe_allow_html=True)
+                
+                # Smart mode recommendation
+                if obf_mode == "Smart Mode (AI-Driven)":
+                    if complexity_score < 50:
+                        recommendation = "Light obfuscation recommended"
+                        rec_color = "#28a745"
+                    elif complexity_score < 150:
+                        recommendation = "Moderate obfuscation recommended"
+                        rec_color = "#ffc107"
+                    else:
+                        recommendation = "Heavy obfuscation recommended"
+                        rec_color = "#dc3545"
+                    
+                    st.markdown(f"""
+                    **AI Recommendation:** 
+                    <span style="color: {rec_color}; font-weight: bold;">{recommendation}</span>
+                    """, unsafe_allow_html=True)
     
     # Process button
     st.markdown("---")
@@ -407,7 +424,8 @@ def main():
                         'target_platform': target_platform,
                         'target_arch': target_arch,
                         'opt_level': opt_level,
-                        'resistance_threshold': resistance_threshold
+                        'resistance_threshold': resistance_threshold,
+                        'use_real_backend': use_real_backend
                     }
                 )
 
@@ -478,7 +496,19 @@ def run_obfuscation_process(code_content, filename, analysis, cycles, config):
     if config['flattening']:
         selected_passes.append('control_flow_flattening')
     
-    success = mock_backend.simulate_clang_compilation(input_file, output_file, selected_passes)
+    # Use enhanced wrapper if available
+    if ENHANCED_WRAPPER_AVAILABLE and config.get('use_real_backend', False):
+        st.info("🔧 Using Real LLVM Backend (Polaris-Obfuscator)")
+        wrapper = EnhancedObfuscatorWrapper(use_real_backend=True)
+        success = wrapper.apply_obfuscation(input_file, output_file, selected_passes, config)
+        if success:
+            # Get real metrics
+            real_metrics = wrapper.get_metrics(input_file, output_file)
+            # Update metrics with real data
+            metrics.update(real_metrics)
+    else:
+        st.info("🎭 Using Demo Backend (Mock)")
+        success = mock_backend.simulate_clang_compilation(input_file, output_file, selected_passes)
     time.sleep(1.5)
     
     # Step 5: Generate output

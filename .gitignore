@@ -1,0 +1,47 @@
+# LLVM Obfuscator .gitignore
+
+# External LLVM components (downloaded during setup)
+Polaris-Obfuscator/
+llvm-project/
+llvm-build/
+llvm-install/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Temporary files
+temp_*
+*_temp.*
+*.tmp
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Demo outputs (keep demo_output/ but ignore temp outputs)
+temp_output/
+test_output/
+
+# Backup files
+*_OLD.*
+*.bak
+*.backup
